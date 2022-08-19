@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const uuid = require("./helpers/uuid");
-// const fsUtils = require("./helpers/fsUtils");
+const fsUtils = require("./helpers/fsUtils");
 const PORT = process.env.PORT || 3001;
 
 const app = express();
@@ -65,11 +65,29 @@ app.post("/api/notes", (req, res) => {
             {
               return writeErr
                 ? console.error(writeErr)
-                : console.info("Successfully updated reviews!");
+                : console.info("Successfully updated notes!");
             }
         );
       }
     });
+
+    app.post('/api/notes', (req, res) => {
+      console.info(`${req.method} request received for notes`);
+  
+      const { title, text } = req.body;
+  
+      if (req.body) {
+          const newNote = {
+              title,
+              text,
+              id: uuid()
+          };
+          readAndAppend(newNote, './db/db.json');
+          res.json(`New Note Added!`);
+      } else {
+          res.error("Error! Couldn't add note")
+      }
+  });
 
     const response = {
       status: "success",
